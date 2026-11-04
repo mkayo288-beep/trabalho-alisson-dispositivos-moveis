@@ -1,0 +1,10 @@
+{
+  "description": "Connects users needing to send small international packages with travelers who have space in their luggage, ensuring secure and affordable delivery.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
