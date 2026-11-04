@@ -1,5 +1,7 @@
 {
-  "description": "Connects users needing to send small international packages with travelers who have space in their luggage, ensuring secure and affordable delivery.",
+  "title": "LevaComigo — Transporte colaborativo",
+  "language": "pt-BR",
+  "description": "Encontre viagens, solicite transporte de pequenas encomendas e acompanhe cada etapa da entrega no LevaComigo.",
   "robots": {
     "index": false
   },
