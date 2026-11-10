@@ -4,6 +4,7 @@ import '../../../../app/theme/app_theme.dart';
 import '../../../../shared/widgets/common.dart';
 import '../../domain/models.dart';
 import '../state/market_controller.dart';
+import 'home_page.dart';
 import 'profile_page.dart';
 import 'shipment_pages.dart';
 import 'trip_pages.dart';
@@ -71,8 +72,14 @@ class _ShellPageState extends State<ShellPage> with WidgetsBindingObserver {
         appBar: AppBar(
           title: Text(
             wide ? 'LEVAComigo / ${labels[index]}' : 'LEVAComigo',
-            style: const TextStyle(fontWeight: FontWeight.w800),
+            style: const TextStyle(
+              fontWeight: FontWeight.w800,
+              letterSpacing: -.8,
+              fontSize: 21,
+              color: ink,
+            ),
           ),
+          titleSpacing: 20,
           actions: [
             IconButton(
               tooltip: 'Atualizar dados',
@@ -140,131 +147,23 @@ class _ShellPageState extends State<ShellPage> with WidgetsBindingObserver {
         ),
         bottomNavigationBar: wide
             ? null
-            : NavigationBar(
-                selectedIndex: index,
-                onDestinationSelected: (v) => setState(() => index = v),
-                destinations: [
-                  for (var i = 0; i < labels.length; i++)
-                    NavigationDestination(
-                      icon: Icon(icons[i]),
-                      label: labels[i],
-                    ),
-                ],
+            : DecoratedBox(
+                decoration: const BoxDecoration(
+                  border: Border(top: BorderSide(color: Color(0xFFE5E9E1))),
+                ),
+                child: NavigationBar(
+                  selectedIndex: index,
+                  onDestinationSelected: (v) => setState(() => index = v),
+                  destinations: [
+                    for (var i = 0; i < labels.length; i++)
+                      NavigationDestination(
+                        icon: Icon(icons[i]),
+                        label: labels[i],
+                      ),
+                  ],
+                ),
               ),
       ),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.controller, required this.navigate});
-  final MarketController controller;
-  final void Function(int) navigate;
-  @override
-  Widget build(BuildContext context) {
-    final active = controller.myShipments
-        .where((s) => !terminal(s.status))
-        .toList();
-    Widget action(
-      String title,
-      String text,
-      IconData icon,
-      VoidCallback onTap,
-      bool dark,
-    ) => Container(
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: dark ? ink : const Color(0xFFE8EEDC),
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 40, color: dark ? lime : ink),
-          const SizedBox(height: 24),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w700,
-              color: dark ? Colors.white : ink,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            text,
-            style: TextStyle(
-              color: dark ? const Color(0xFFCAD4C4) : ink,
-              height: 1.6,
-            ),
-          ),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            style: dark
-                ? FilledButton.styleFrom(
-                    backgroundColor: lime,
-                    foregroundColor: ink,
-                  )
-                : null,
-            onPressed: onTap,
-            icon: const Icon(Icons.arrow_forward),
-            label: Text(dark ? 'Buscar viagens' : 'Publicar viagem'),
-          ),
-        ],
-      ),
-    );
-    final first = action(
-      'Pequena encomenda.\nGrandes conexões.',
-      'Encontre alguém que já está indo para o seu destino.',
-      Icons.inventory_2_outlined,
-      () => navigate(1),
-      true,
-    );
-    final second = action(
-      'Sua bagagem pode\nlevar mais histórias.',
-      'Compartilhe espaço na próxima viagem e combine seu preço.',
-      Icons.flight_takeoff,
-      () => openPage(context, OfferPage(controller: controller)),
-      false,
-    );
-    return PageBody(
-      children: [
-        SectionTitle(
-          'O que vamos conectar hoje?',
-          eyebrow: 'Olá, ${controller.profile['name'].split(' ').first}',
-          subtitle: 'Envie com cuidado. Viaje com propósito.',
-        ),
-        LayoutBuilder(
-          builder: (context, constraints) => constraints.maxWidth > 700
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: first),
-                    const SizedBox(width: 20),
-                    Expanded(child: second),
-                  ],
-                )
-              : Column(children: [first, const SizedBox(height: 16), second]),
-        ),
-        SectionTitle(
-          'A caminho',
-          eyebrow: '${active.length} envio(s) em andamento',
-        ),
-        if (active.isEmpty)
-          const EmptyState(
-            'Nenhuma encomenda em andamento. Sua próxima conexão começa na busca.',
-          ),
-        for (final s in active.reversed.take(4))
-          ShipmentTile(controller: controller, shipment: s),
-        TextButton(
-          onPressed: () => navigate(2),
-          child: const Text('Ver todos os envios e transportes'),
-        ),
-        const Text(
-          'Versão local · sem cobrança, GPS ou sincronização entre dispositivos.',
-          textAlign: TextAlign.center,
-        ),
-      ],
     );
   }
 }

@@ -51,8 +51,32 @@ class SearchPage extends StatelessWidget {
         ),
       ),
       const Panel(
-        child: Text(
-          'Confira o conteúdo, as regras do destino e os documentos necessários antes de combinar o transporte. Não são aceitas mercadorias proibidas.',
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.info_outline, size: 22),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Antes de enviar',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    'Confira o conteúdo, as regras do destino e os documentos necessários antes de combinar o transporte. Não são aceitas mercadorias proibidas.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.6,
+                      color: Color(0xFF6D7B72),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     ],

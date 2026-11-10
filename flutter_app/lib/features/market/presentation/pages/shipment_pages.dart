@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme/app_theme.dart';
 import '../../../../shared/widgets/common.dart';
 import '../../domain/models.dart';
 import '../state/market_controller.dart';
@@ -28,25 +29,38 @@ class ShipmentTile extends StatelessWidget {
             children: [
               Text(
                 '#${shipment.id} · ${shipment.itemType}',
-                style: const TextStyle(fontSize: 12),
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: muted,
+                  letterSpacing: .3,
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 14),
               Text(
                 '${city(t.origin)} → ${city(t.destination)}',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
+              const Divider(height: 20),
               Wrap(
                 spacing: 12,
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   StatusChip(shipment.status),
-                  Text('${shipment.weight} kg · ${money(shipment.price)}'),
+                  Text(
+                    '${shipment.weight} kg · ${money(shipment.price)}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
                   Text(
                     shipment.senderId == controller.email
                         ? 'Viajante: ${t.name}'
                         : 'Remetente: ${shipment.sender}',
+                    style: const TextStyle(fontSize: 12, color: muted),
                   ),
                 ],
               ),

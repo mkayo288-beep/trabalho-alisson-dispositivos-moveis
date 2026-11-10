@@ -3,6 +3,7 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../app/theme/app_theme.dart';
 import '../../features/market/domain/models.dart';
 import '../../features/market/presentation/state/market_controller.dart';
 
@@ -107,7 +108,12 @@ class PageBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
     keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-    padding: const EdgeInsets.all(24),
+    padding: EdgeInsets.fromLTRB(
+      MediaQuery.sizeOf(context).width < 600 ? 20 : 32,
+      12,
+      MediaQuery.sizeOf(context).width < 600 ? 20 : 32,
+      24,
+    ),
     child: Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1080),
@@ -163,8 +169,8 @@ class SectionTitle extends StatelessWidget {
           eyebrow!.toUpperCase(),
           style: TextStyle(
             color: Theme.of(context).colorScheme.primary,
-            letterSpacing: 2,
-            fontSize: 12,
+            letterSpacing: 1.4,
+            fontSize: 10,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -173,7 +179,10 @@ class SectionTitle extends StatelessWidget {
       if (subtitle != null)
         Padding(
           padding: const EdgeInsets.only(top: 10),
-          child: Text(subtitle!, style: Theme.of(context).textTheme.bodyLarge),
+          child: Text(
+            subtitle!,
+            style: const TextStyle(fontSize: 14, height: 1.5, color: muted),
+          ),
         ),
     ],
   );
@@ -184,7 +193,7 @@ class Panel extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) => Card(
-    child: Padding(padding: const EdgeInsets.all(24), child: child),
+    child: Padding(padding: const EdgeInsets.all(20), child: child),
   );
 }
 
@@ -200,12 +209,23 @@ class EmptyState extends StatelessWidget {
   Widget build(BuildContext context) => Panel(
     child: Column(
       children: [
-        Icon(icon, size: 44, color: Theme.of(context).colorScheme.primary),
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: const BoxDecoration(
+            color: Color(0xFFF0F4E9),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            size: 30,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
         const SizedBox(height: 16),
         Text(
           text,
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: const TextStyle(fontSize: 14, height: 1.6, color: muted),
         ),
       ],
     ),
@@ -216,15 +236,40 @@ class StatusChip extends StatelessWidget {
   const StatusChip(this.status, {super.key});
   final String status;
   @override
-  Widget build(BuildContext context) => Chip(
-    avatar: Icon(
-      terminal(status) ? Icons.check_circle_outline : Icons.schedule,
-      size: 16,
-    ),
-    label: Text(statusLabels[status] ?? status),
-    backgroundColor: status == 'completed' ? const Color(0xFFE2F2D8) : null,
-    side: BorderSide.none,
-  );
+  Widget build(BuildContext context) {
+    final Color foreground;
+    final Color background;
+    if (status == 'completed') {
+      foreground = const Color(0xFF2F6B42);
+      background = const Color(0xFFE8F4E8);
+    } else if (['cancelled', 'refused'].contains(status)) {
+      foreground = const Color(0xFF9A4B3F);
+      background = const Color(0xFFFBEEEA);
+    } else if (['pending', 'arrived'].contains(status)) {
+      foreground = const Color(0xFF856015);
+      background = const Color(0xFFF8F1DD);
+    } else {
+      foreground = const Color(0xFF3E6659);
+      background = const Color(0xFFE8F1EB);
+    }
+    return Chip(
+      avatar: Icon(
+        terminal(status) ? Icons.check_circle_outline : Icons.schedule,
+        size: 16,
+        color: foreground,
+      ),
+      label: Text(
+        statusLabels[status] ?? status,
+        style: TextStyle(
+          color: foreground,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      backgroundColor: background,
+      side: BorderSide.none,
+    );
+  }
 }
 
 class RouteSummary extends StatelessWidget {
@@ -282,6 +327,7 @@ class _FieldsState extends State<Fields> {
     (k, v) => MapEntry(k, TextEditingController(text: v)),
   );
   bool saving = false;
+  final Set<String> visiblePasswords = {};
   @override
   void dispose() {
     for (final c in inputs.values) {
@@ -329,6 +375,24 @@ class _FieldsState extends State<Fields> {
                     controller: inputs[entry.key],
                     decoration: InputDecoration(
                       labelText: entry.value,
+                      prefixIcon: switch (entry.key) {
+                        'origin' => const Icon(
+                          Icons.radio_button_checked,
+                          size: 19,
+                        ),
+                        'destination' => const Icon(
+                          Icons.location_on_outlined,
+                          size: 21,
+                        ),
+                        'weight' ||
+                        'space' => const Icon(Icons.scale_outlined, size: 20),
+                        'email' => const Icon(Icons.alternate_email, size: 20),
+                        'price' || 'declaredValue' => const Icon(
+                          Icons.payments_outlined,
+                          size: 20,
+                        ),
+                        _ => null,
+                      },
                       suffixIcon: entry.key == 'date'
                           ? IconButton(
                               tooltip: 'Escolher data',
@@ -373,9 +437,28 @@ class _FieldsState extends State<Fields> {
                                   )
                                   .toList(),
                             )
+                          : widget.passwords.contains(entry.key)
+                          ? IconButton(
+                              tooltip: visiblePasswords.contains(entry.key)
+                                  ? 'Ocultar senha'
+                                  : 'Mostrar senha',
+                              onPressed: () => setState(() {
+                                if (!visiblePasswords.add(entry.key)) {
+                                  visiblePasswords.remove(entry.key);
+                                }
+                              }),
+                              icon: Icon(
+                                visiblePasswords.contains(entry.key)
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                size: 20,
+                              ),
+                            )
                           : null,
                     ),
-                    obscureText: widget.passwords.contains(entry.key),
+                    obscureText:
+                        widget.passwords.contains(entry.key) &&
+                        !visiblePasswords.contains(entry.key),
                     keyboardType: widget.numbers.contains(entry.key)
                         ? const TextInputType.numberWithOptions(decimal: true)
                         : entry.key == 'email'
