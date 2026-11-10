@@ -2,6 +2,10 @@
 
 Aplicação acadêmica de transporte colaborativo de pequenas encomendas, desenvolvida com React 19, Vite 8 e Tailwind CSS 4. Remetentes encontram viagens compatíveis; viajantes publicam espaço na bagagem e gerenciam os pedidos.
 
+## Versão Flutter / Dart
+
+A migração está em [`flutter_app`](flutter_app/README.md), com Android e Web, interface Material 3 e regras locais do LevaComigo. O React permanece preservado para comparação e exportação. Consulte o [diagnóstico](docs/MIGRACAO_FLUTTER.md) e a documentação Flutter para executar, transferir dados e gerar o APK.
+
 ## Executar
 
 ```sh

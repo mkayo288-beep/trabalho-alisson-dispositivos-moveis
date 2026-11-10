@@ -7,6 +7,7 @@
   type ReactNode,
   type FormEvent,
 } from "react"
+import { migrationArchive } from "./migration"
 import {
   Avatar,
   Button,
@@ -1708,6 +1709,14 @@ function UserProfile({ logout }: { logout: () => void }) {
               }
             >
               EXPORTAR MEUS DADOS
+            </Button>
+            <Button variant="secondary" onClick={() => {
+              if (window.confirm("Este arquivo inclui todas as contas locais e hashes de acesso. Guarde-o em local privado. Exportar para Flutter?")) {
+                try { download("migracao-leva-comigo.json", migrationArchive(localStorage)) }
+                catch { notify("Não foi possível exportar: há dados locais inválidos. Nenhum dado foi alterado.") }
+              }
+            }}>
+              EXPORTAR MIGRAÇÃO FLUTTER
             </Button>
             <Button variant="danger" onClick={logout}>
               SAIR DA CONTA

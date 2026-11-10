@@ -1,4 +1,8 @@
 node_modules/
+.tools/
+flutter_app/.dart_tool/
+flutter_app/build/
+flutter_app/android/local.properties
 test-results/
 playwright-report/
 dist/

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LevaComigo · Prévia celular</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #101713; color: #f4f6ef; font: 14px system-ui, sans-serif; height: 100dvh; display: flex; flex-direction: column; }
+    header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 16px 24px; border-bottom: 1px solid #304034; }
+    strong { font-size: 18px; } small { color: #b7c2b6; display: block; margin-top: 4px; }
+    .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    select, button, a { font: inherit; border: 1px solid #405242; border-radius: 10px; color: #eff6e7; background: #202c23; padding: 10px 12px; text-decoration: none; cursor: pointer; }
+    button:hover, a:hover { background: #334535; } :focus-visible { outline: 2px solid #c8ff46; outline-offset: 3px; }
+    main { flex: 1; min-height: 0; display: grid; place-items: center; overflow: hidden; padding: 18px; }
+    #holder { position: relative; }
+    #phone { position: absolute; transform-origin: top left; background: #050905; padding: 10px; border: 2px solid #61715f; border-radius: 36px; box-shadow: 0 24px 70px #0008; }
+    iframe { display: block; border: 0; border-radius: 24px; background: #f5f6f0; }
+    footer { text-align: center; padding: 0 16px 12px; color: #a3b19f; font-size: 12px; }
+    @media(max-width: 600px) { header { padding: 12px; } small { display: none; } .controls { gap: 5px; } select,button,a { padding: 8px; font-size: 12px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>LEVA<span style="color:#c8ff46">Comigo</span></strong><small>Prévia interativa em tamanho de celular</small></div>
+    <div class="controls">
+      <select id="device" aria-label="Modelo de celular">
+        <option value="393,852">Android · 393 × 852</option>
+        <option value="412,915">Android grande · 412 × 915</option>
+        <option value="360,800">Android compacto · 360 × 800</option>
+        <option value="390,844">iPhone · 390 × 844</option>
+      </select>
+      <button id="rotate" type="button">Girar tela</button>
+      <button id="reload" type="button">Recarregar</button>
+      <a href="/" target="_blank" rel="noopener">Abrir app ↗</a>
+    </div>
+  </header>
+  <main><div id="holder"><div id="phone"><iframe src="/" title="LevaComigo em tela de celular" allow="clipboard-write"></iframe></div></div></main>
+  <footer>Aplicação Flutter Web real · a moldura simula o tamanho da tela, sem emular o sistema Android.</footer>
+  <script>
+    const device = document.querySelector('#device');
+    const phone = document.querySelector('#phone');
+    const holder = document.querySelector('#holder');
+    const frame = document.querySelector('iframe');
+    const main = document.querySelector('main');
+    let landscape = false;
+    function resize() {
+      let [width, height] = device.value.split(',').map(Number);
+      if (landscape) [width, height] = [height, width];
+      frame.style.width = width + 'px'; frame.style.height = height + 'px';
+      const outerWidth = width + 24, outerHeight = height + 24;
+      const scale = Math.min(1, (main.clientWidth - 36) / outerWidth, (main.clientHeight - 36) / outerHeight);
+      phone.style.width = outerWidth + 'px'; phone.style.height = outerHeight + 'px';
+      phone.style.transform = `scale(${Math.max(.1, scale)})`;
+      holder.style.width = outerWidth * scale + 'px'; holder.style.height = outerHeight * scale + 'px';
+    }
+    device.addEventListener('change', resize);
+    document.querySelector('#rotate').addEventListener('click', () => { landscape = !landscape; resize(); });
+    document.querySelector('#reload').addEventListener('click', () => frame.contentWindow.location.reload());
+    new ResizeObserver(resize).observe(main);
+    resize();
+  </script>
+</body>
+</html>
